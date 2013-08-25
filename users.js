@@ -29,7 +29,17 @@ function UsersDAO(db) {
         }
 
         // TODO: hw2.3
-        callback(Error("addUser Not Yet Implemented!"), null);
+        users.insert(user, function(err, inserted) {
+            "use strict";   
+            if (err) {
+                console.dir("addUser: " + err.message);               
+                callback(err, null);
+            }
+            else {
+                console.dir("addUser: " + username);
+                callback(null, user);
+            }
+        });
     }
 
     this.validateLogin = function(username, password, callback) {
@@ -39,7 +49,7 @@ function UsersDAO(db) {
         function validateUserDoc(err, user) {
             "use strict";
 
-            if (err) return callback(err, null);
+            if (err) { return callback(err, null); }
 
             if (user) {
                 if (bcrypt.compareSync(password, user.password)) {
@@ -61,7 +71,13 @@ function UsersDAO(db) {
         }
 
         // TODO: hw2.3
-        callback(Error("validateLogin Not Yet Implemented!"), null);
+        var query = {"_id" : username };
+        var fields =  {"_id":false, "password":true };
+        users.findOne(query, function(error, doc) {
+            // get the username from the document
+            validateUserDoc.call(undefined, error, doc);
+        });
+        //        callback(Error("validateLogin Not Yet Implemented!"), null);
     }
 }
 
